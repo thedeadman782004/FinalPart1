@@ -1,0 +1,76 @@
+<html ng-app="app">
+<head>
+  <title>ngTodo</title>
+</head>
+<body>
+
+<ng-view></ng-view>
+
+<!-- Libraries -->
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular-route.min.js"></script>
+
+<!-- Template -->
+<script type="text/ng-template" id="/todos.html">
+  Search: <input type="text" ng-model="search.name">
+  <ul>
+    <li ng-repeat="todo in todos | filter: search">
+      <input type="checkbox" ng-model="todo.completed">
+      <a href="#/{{$index}}">{{todo.name}}</a>
+    </li>
+  </ul>
+</script>
+
+<script type="text/ng-template" id="/todoDetails.html">
+  <h1>{{ todo.name }}</h1>
+  Reviewed: <input type="checkbox" ng-model="todo.completed">
+  Comments: <textarea>{{ todo.note }}</textarea>
+</script>
+
+<script>
+  angular.module('app', ['ngRoute'])
+
+    //---------------
+    // Services
+    //---------------
+
+    .factory('Todos', function(){
+      return [
+        { name: 'MacGyver can build an airplane out of gum and paper clips. Chuck Norris can kill him and take it.', completed: true, note: 'add notes...' },
+        { name: 'Chuck Norris doesn\'t read books. He stares them down until he gets the information he wants.', completed: true, note: 'add notes...' },
+        { name: 'If you ask Chuck Norris what time it is, he always answers "Two seconds till". After you ask "Two seconds to what?", he roundhouse kicks you in the face.', completed: true, note: 'add notes...' },
+      ];
+    })
+
+    //---------------
+    // Controllers
+    //---------------
+
+    .controller('TodoController', ['$scope', 'Todos', function ($scope, Todos) {
+      $scope.todos = Todos;
+    }])
+
+    .controller('TodoDetailCtrl', ['$scope', '$routeParams', 'Todos', function ($scope, $routeParams, Todos) {
+      $scope.todo = Todos[$routeParams.id];
+    }])
+
+    //---------------
+    // Routes
+    //---------------
+
+    .config(['$routeProvider', function ($routeProvider) {
+      $routeProvider
+        .when('/', {
+          templateUrl: '/todos.html',
+          controller: 'TodoController'
+        })
+
+        .when('/:id', {
+          templateUrl: '/todoDetails.html',
+          controller: 'TodoDetailCtrl'
+       });
+    }]);
+</script>
+
+</body>
+</html>
